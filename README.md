@@ -4,11 +4,11 @@ Hi ![](https://user-images.githubusercontent.com/18350557/176309783-0785949b-912
 Data Analyst
 ------------
 
-I am a data analyst who wants to learn more about machine languages.
+I am a data analyst who wants to learn more about computer programming langauges.
 
 * 🌍  I'm based in Nairobi.
 * ✉️  You can contact me at [sir.kevin.mwangi@gmail.com](mailto:sir.kevin.mwangi@gmail.com)
-* 🧠  I'm learning Programming
+* 🧠  I'm learning computer Programming
 * 🤝  I'm open to collaborating on Projects
 
 ### Skills
