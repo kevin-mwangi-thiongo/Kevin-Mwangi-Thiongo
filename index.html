@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rhoda Autospares | Quality Motorbike Parts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">Rhoda<span>Autospares</span></div>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search by part name or category..." oninput="handleSearch(event)">
+      </div>
+      <div class="cart-badge" onclick="scrollToCart()">
+        Cart (<span id="cart-count">0</span>)
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Promo Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Genuine Motorbike Spares & Accessories</h2>
+      <p>High-performance chains, brakes, tires, and engine parts delivered fast.</p>
+    </div>
+  </section>
+
+  <!-- Main Store Layout -->
+  <main class="store-container">
+    
+    <!-- Sidebar Filters & Catalog -->
+    <section class="catalog-section">
+      <div class="filter-bar">
+        <h3>Categories</h3>
+        <div id="category-buttons" class="category-buttons"></div>
+      </div>
+
+      <div id="product-grid" class="product-grid"></div>
+    </section>
+
+    <!-- Shopping Cart Panel -->
+    <aside id="cart-panel" class="cart-panel">
+      <h3>Order Summary</h3>
+      <div id="cart-items" class="cart-items-list">Your cart is empty.</div>
+      <div class="cart-footer">
+        <div class="total-row">
+          <span>Total:</span>
+          <strong>KSh <span id="cart-total">0</span></strong>
+        </div>
+        <button class="checkout-btn" onclick="checkoutWhatsApp()">Checkout via WhatsApp</button>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="Rhoda.js"></script>
+</body>
+</html>
