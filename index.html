@@ -3,59 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rhoda Autospares | Quality Motorbike Parts</title>
+  <title>Rhoda Autospares</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
-  <header class="navbar">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
     <div class="nav-container">
       <div class="logo">Rhoda<span>Autospares</span></div>
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Search by part name or category..." oninput="handleSearch(event)">
+        <input type="text" id="search-input" placeholder="Search by part name or category..." onkeyup="handleSearch()">
       </div>
-      <div class="cart-badge" onclick="scrollToCart()">
+      <button class="cart-badge" onclick="scrollToCart()">
         Cart (<span id="cart-count">0</span>)
-      </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Genuine Motorbike Spares & Accessories</h1>
+      <p>High-performance chains, brakes, tires, and engine parts delivered fast.</p>
     </div>
   </header>
 
-  <!-- Hero Promo Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h2>Genuine Motorbike Spares & Accessories</h2>
-      <p>High-performance chains, brakes, tires, and engine parts delivered fast.</p>
-    </div>
-  </section>
-
-  <!-- Main Store Layout -->
-  <main class="store-container">
+  <!-- Store Layout -->
+  <div class="store-container">
     
-    <!-- Sidebar Filters & Catalog -->
-    <section class="catalog-section">
-      <div class="filter-bar">
-        <h3>Categories</h3>
-        <div id="category-buttons" class="category-buttons"></div>
+    <!-- Left Catalog Column -->
+    <main class="catalog-section">
+      <h3>Categories</h3>
+      
+      <div class="category-header-row">
+        <div class="category-buttons">
+          <button class="category-btn active" onclick="filterCategory('All')">All</button>
+          <button class="category-btn" onclick="filterCategory('Services')">Services</button>
+          <button class="category-btn" onclick="filterCategory('Spare Parts')">Spare Parts</button>
+          <button class="category-btn" onclick="filterCategory('Used Bikes')">Second-Hand Bikes</button>
+        </div>
+        <button class="post-bike-btn" onclick="openBikeModal()">+ Post Bike for Resale</button>
       </div>
 
+      <!-- Dynamic Product Grid -->
       <div id="product-grid" class="product-grid"></div>
-    </section>
+    </main>
 
-    <!-- Shopping Cart Panel -->
-    <aside id="cart-panel" class="cart-panel">
+    <!-- Sidebar Cart -->
+    <aside class="cart-panel" id="cart-section">
       <h3>Order Summary</h3>
-      <div id="cart-items" class="cart-items-list">Your cart is empty.</div>
+      <div id="cart-items" class="cart-items-list"></div>
+
       <div class="cart-footer">
         <div class="total-row">
           <span>Total:</span>
           <strong>KSh <span id="cart-total">0</span></strong>
         </div>
-        <button class="checkout-btn" onclick="checkoutWhatsApp()">Checkout via WhatsApp</button>
+        <button class="checkout-btn" onclick="checkoutWhatsApp()">
+          Checkout via WhatsApp
+        </button>
       </div>
     </aside>
 
-  </main>
+  </div>
+
+  <!-- Post Motorbike Resale Modal -->
+  <div id="bike-modal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeBikeModal()">&times;</button>
+      <h3>Post Motorbike for Resale</h3>
+      <p class="modal-sub">Upload image details to display on the store catalog.</p>
+      
+      <form onsubmit="submitBikeListing(event)">
+        <div class="form-group">
+          <label>Bike Model / Make</label>
+          <input type="text" id="bike-model" placeholder="e.g. Boxer BM150 (2022)" required>
+        </div>
+        <div class="form-group">
+          <label>Asking Price (KSh)</label>
+          <input type="number" id="bike-price" placeholder="e.g. 85000" required>
+        </div>
+        <div class="form-group">
+          <label>Upload Bike Photo</label>
+          <input type="file" id="bike-image-file" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label>Condition / Details</label>
+          <textarea id="bike-desc" rows="3" placeholder="e.g. Clean logbook, low mileage, well-maintained." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Seller Phone Number</label>
+          <input type="tel" id="seller-contact" placeholder="e.g. 0712345678" required>
+        </div>
+        <button type="submit" class="submit-listing-btn">Publish Motorbike</button>
+      </form>
+    </div>
+  </div>
 
   <script src="Rhoda.js"></script>
 </body>

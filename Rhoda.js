@@ -1,157 +1,121 @@
-// Rhoda.js - Complete catalog, cart logic, and configured WhatsApp ordering
-
-// --- Product & Service Database ---
+// Data model includes `image` and `isSoldOut` properties
 const products = [
-  // --- Workshop Services ---
-  { id: 101, name: "Chain Adjustment", price: 50, category: "Services" },
-  { id: 102, name: "Chain Replacement", price: 200, category: "Services" },
-  { id: 103, name: "Front Sprocket Replacement", price: 100, category: "Services" },
-  { id: 104, name: "Rear Sprocket Replacement", price: 250, category: "Services" },
-  { id: 105, name: "Motor Oil Change", price: 150, category: "Services" },
-  { id: 106, name: "Indicator Change (Single)", price: 50, category: "Services" },
-  { id: 107, name: "Headlight Change", price: 100, category: "Services" },
-  { id: 108, name: "Side Mirror Replacement", price: 50, category: "Services" },
-  { id: 109, name: "Spot Light Installation (Per Piece)", price: 100, category: "Services" },
-  { id: 110, name: "Horn Installation", price: 150, category: "Services" },
-  { id: 111, name: "Tyre Bearings Replacement", price: 100, category: "Services" },
-  { id: 112, name: "Cone Bearings Replacement", price: 250, category: "Services" },
-  { id: 113, name: "DC Converter Replacement", price: 100, category: "Services" },
-  { id: 114, name: "MCB Replacement", price: 300, category: "Services" },
-  { id: 115, name: "Tail Light Replacement", price: 150, category: "Services" },
-  { id: 116, name: "Tyre Replacement", price: 200, category: "Services" },
-  { id: 117, name: "Minor Wiring Repair", price: 500, category: "Services" },
-  { id: 118, name: "Major Wiring Repair", price: 1000, category: "Services" },
-  { id: 119, name: "Front Shock Service", price: 500, category: "Services" },
-  { id: 120, name: "Rear Shocks Replacement", price: 200, category: "Services" },
-  { id: 121, name: "Swing Arm Bushes Replacement", price: 500, category: "Services" },
-  { id: 122, name: "Power Cable Replacement", price: 100, category: "Services" },
-  { id: 123, name: "Brake Pad Replacement", price: 100, category: "Services" },
-  { id: 124, name: "Brake Pad Bleeding", price: 150, category: "Services" },
-  { id: 125, name: "Caliper Replacement", price: 250, category: "Services" },
-  { id: 126, name: "Harness Replacement", price: 500, category: "Services" },
+  { id: 1, name: "Chain Adjustment", price: 50, category: "Services", isSoldOut: false },
+  { id: 2, name: "Chain Replacement", price: 200, category: "Services", isSoldOut: false },
+  { id: 3, name: "Front Sprocket Replacement", price: 100, category: "Services", isSoldOut: false },
 
-  // --- Spare Parts & Accessories ---
-  { id: 201, name: "Phone Holder", price: 700, category: "Spare Parts" },
-  { id: 202, name: "Heavy Duty Chain & Sprocket Set", price: 2500, category: "Spare Parts" },
-  { id: 203, name: "Front Brake Pads (Ceramic)", price: 850, category: "Spare Parts" },
-  { id: 204, name: "17-Inch Rear Tubeless Tyre", price: 4200, category: "Spare Parts" },
-  { id: 205, name: "Performance Spark Plug", price: 450, category: "Spare Parts" },
-  { id: 206, name: "Maintenance-Free 12V Battery", price: 3200, category: "Spare Parts" },
-  { id: 207, name: "4T Engine Oil 1L", price: 950, category: "Spare Parts" }
+  { id: 6, name: "Heavy Duty Bike Chain", price: 1200, category: "Spare Parts", isSoldOut: false },
+  { id: 7, name: "Front Brake Pads", price: 450, category: "Spare Parts", isSoldOut: true }, // Example Sold Out item
+
+  { 
+    id: 101, 
+    name: "Boxer BM150 (2021 Model)", 
+    price: 85000, 
+    category: "Used Bikes",
+    image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=400&q=80",
+    description: "Good working condition, complete logbook.",
+    isSoldOut: false
+  },
+  { 
+    id: 102, 
+    name: "TVS HLX 125 (Pre-owned)", 
+    price: 72000, 
+    category: "Used Bikes",
+    image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=400&q=80",
+    description: "Low mileage, engine in great condition.",
+    isSoldOut: true // Sold Out Bike Example
+  }
 ];
 
-// --- Application State ---
 let cart = [];
-let activeCategory = "All";
-let searchQuery = "";
+let currentCategory = "All";
+const WHATSAPP_PHONE = "254714303187";
 
-// Store Contact Configuration
-const WHATSAPP_PHONE = "254714303187"; 
-
-// --- App Initialization ---
-function init() {
-  renderCategories();
-  renderProducts();
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts(products);
   updateCart();
-}
+});
 
-// --- Dynamic Category Filtering ---
-function renderCategories() {
-  const container = document.getElementById("category-buttons");
-  if (!container) return;
+function renderProducts(itemsToRender) {
+  const grid = document.getElementById("product-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
 
-  const categories = ["All", ...new Set(products.map(p => p.category))];
-  container.innerHTML = "";
-
-  categories.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.className = `category-btn ${cat === activeCategory ? 'active' : ''}`;
-    btn.innerText = cat;
-    btn.onclick = () => {
-      activeCategory = cat;
-      renderCategories();
-      renderProducts();
-    };
-    container.appendChild(btn);
-  });
-}
-
-// --- Product Grid Rendering ---
-function renderProducts() {
-  const container = document.getElementById("product-grid");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const filtered = products.filter(p => {
-    const matchCat = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
-  });
-
-  if (filtered.length === 0) {
-    container.innerHTML = "<p class='no-results'>No items found.</p>";
+  if (itemsToRender.length === 0) {
+    grid.innerHTML = "<p style='grid-column: 1/-1; color:#64748b;'>No items found in this category.</p>";
     return;
   }
 
-  filtered.forEach(p => {
+  itemsToRender.forEach(product => {
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = `card ${product.isSoldOut ? 'sold-out-card' : ''}`;
+    
     card.innerHTML = `
       <div>
-        <small style="color:#6b7280">${p.category}</small>
-        <h4>${p.name}</h4>
+        ${product.image ? `<div class="card-img-wrapper"><img src="${product.image}" alt="${product.name}">${product.isSoldOut ? '<span class="sold-badge">SOLD OUT</span>' : ''}</div>` : ''}
+        <span class="card-category">${product.category}</span>
+        <h4>${product.name}</h4>
+        ${product.description ? `<p class="card-desc">${product.description}</p>` : ''}
+        <div class="price">KSh ${product.price.toLocaleString()}</div>
       </div>
-      <div>
-        <div class="price">KSh ${p.price.toLocaleString()}</div>
-        <button onclick="addToCart(${p.id})">Add to Cart</button>
-      </div>
+      <button ${product.isSoldOut ? 'disabled class="disabled-btn"' : `onclick="addToCart(${product.id})"`}>
+        ${product.isSoldOut ? 'Sold Out' : 'Add to Cart'}
+      </button>
     `;
-    container.appendChild(card);
+    grid.appendChild(card);
   });
 }
 
-function handleSearch(e) {
-  searchQuery = e.target.value.trim();
-  renderProducts();
+function filterCategory(category) {
+  currentCategory = category;
+  const buttons = document.querySelectorAll(".category-btn");
+  buttons.forEach(btn => {
+    btn.classList.toggle("active", btn.innerText.trim() === category || (category === "Used Bikes" && btn.innerText.includes("Bikes")));
+  });
+
+  const filtered = category === "All" ? products : products.filter(item => item.category === category);
+  renderProducts(filtered);
 }
 
-// --- Cart Operations ---
-function addToCart(id) {
-  const product = products.find(p => p.id === id);
-  if (!product) return;
+function handleSearch() {
+  const query = document.getElementById("search-input").value.toLowerCase();
+  const filtered = products.filter(item => {
+    const matchesCat = currentCategory === "All" || item.category === currentCategory;
+    const matchesSearch = item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query));
+    return matchesCat && matchesSearch;
+  });
+  renderProducts(filtered);
+}
 
-  const existingItem = cart.find(item => item.id === id);
+function addToCart(productId) {
+  const product = products.find(p => p.id === productId);
+  if (product && product.isSoldOut) return;
 
-  if (existingItem) {
-    existingItem.quantity += 1;
+  const itemInCart = cart.find(item => item.id === productId);
+  if (itemInCart) {
+    itemInCart.quantity += 1;
   } else {
     cart.push({ ...product, quantity: 1 });
   }
-
   updateCart();
 }
 
-function updateQuantity(id, change) {
-  const itemIndex = cart.findIndex(item => item.id === id);
-
-  if (itemIndex > -1) {
-    cart[itemIndex].quantity += change;
-
-    if (cart[itemIndex].quantity <= 0) {
-      cart.splice(itemIndex, 1);
-    }
+function updateQuantity(productId, change) {
+  const itemInCart = cart.find(item => item.id === productId);
+  if (!itemInCart) return;
+  itemInCart.quantity += change;
+  if (itemInCart.quantity <= 0) {
+    removeFromCart(productId);
+  } else {
+    updateCart();
   }
+}
 
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
   updateCart();
 }
 
-function removeFromCart(id) {
-  cart = cart.filter(item => item.id !== id);
-  updateCart();
-}
-
-// --- Cart UI Synchronization ---
 function updateCart() {
   const countContainer = document.getElementById("cart-count");
   const itemsContainer = document.getElementById("cart-items");
@@ -162,16 +126,14 @@ function updateCart() {
 
   if (countContainer) countContainer.innerText = totalItemCount;
   if (totalContainer) totalContainer.innerText = totalPrice.toLocaleString();
-
   if (!itemsContainer) return;
 
   if (cart.length === 0) {
-    itemsContainer.innerHTML = "<p class='empty-msg'>Your cart is empty.</p>";
+    itemsContainer.innerHTML = "<p class='empty-cart'>Your cart is empty.</p>";
     return;
   }
 
   itemsContainer.innerHTML = "";
-
   cart.forEach(item => {
     const div = document.createElement("div");
     div.className = "cart-item";
@@ -186,42 +148,64 @@ function updateCart() {
           <span>${item.quantity}</span>
           <button onclick="updateQuantity(${item.id}, 1)">+</button>
         </div>
-        <button class="remove-btn" onclick="removeFromCart(${item.id})" title="Remove item">&times;</button>
+        <button class="remove-btn" onclick="removeFromCart(${item.id})">&times;</button>
       </div>
     `;
     itemsContainer.appendChild(div);
   });
 }
 
-// --- WhatsApp Integration ---
 function checkoutWhatsApp() {
   if (cart.length === 0) {
-    alert("Please add items to your cart first.");
+    alert("Your cart is empty!");
     return;
   }
 
-  let msg = "Hello Rhoda Autospares, I would like to order/book:\n\n";
-
-  cart.forEach((item, index) => {
-    const itemTotal = item.price * item.quantity;
-    msg += `${index + 1}. *${item.name}* [${item.category}]\n`;
-    msg += `   Qty: ${item.quantity} x KSh ${item.price.toLocaleString()} = KSh ${itemTotal.toLocaleString()}\n`;
+  let message = "Hello Rhoda Autospares! I would like to order:\n\n";
+  cart.forEach(item => {
+    message += `• *${item.name}* (x${item.quantity}) - KSh ${(item.price * item.quantity).toLocaleString()}\n`;
   });
-
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  msg += `\n*Grand Total: KSh ${grandTotal.toLocaleString()}*`;
-  msg += "\n\nPlease confirm availability and booking details.";
+  message += `\n*Total:* KSh ${grandTotal.toLocaleString()}`;
 
-  // Redirect to WhatsApp API using phone number: +254 714 303 187
-  const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-  window.open(whatsappUrl, "_blank");
+  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`, "_blank");
 }
 
-function scrollToCart() {
-  const cartPanel = document.getElementById("cart-panel");
-  if (cartPanel) {
-    cartPanel.scrollIntoView({ behavior: "smooth" });
+function openBikeModal() {
+  document.getElementById("bike-modal").style.display = "flex";
+}
+
+function closeBikeModal() {
+  document.getElementById("bike-modal").style.display = "none";
+}
+
+function submitBikeListing(e) {
+  e.preventDefault();
+  const model = document.getElementById("bike-model").value;
+  const price = parseInt(document.getElementById("bike-price").value);
+  const desc = document.getElementById("bike-desc").value;
+  const fileInput = document.getElementById("bike-image-file");
+
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const newBike = {
+        id: Date.now(),
+        name: model,
+        price: price,
+        category: "Used Bikes",
+        image: e.target.result, // Preview Base64 Data URL
+        description: desc,
+        isSoldOut: false
+      };
+      products.unshift(newBike);
+      filterCategory("Used Bikes");
+      closeBikeModal();
+    };
+    reader.readAsDataURL(fileInput.files[0]);
   }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+function scrollToCart() {
+  document.getElementById("cart-section").scrollIntoView({ behavior: 'smooth' });
+}
